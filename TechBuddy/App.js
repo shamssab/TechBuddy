@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import EmergencyButton from "./components/EmergencyButton";
 import NavigationBar from "./components/NavigationBar";
+import Tip from "./components/Tip";
 
 const App = () => {
   const handleHomePress = () => {
@@ -16,8 +17,10 @@ const App = () => {
     console.log("Button 3 pressed");
   };
 
+
   return (
     <View style={styles.container}>
+      <Tip style={{float: "right"}}/>
       <EmergencyButton />
       <NavigationBar>
         onHomePress={handleHomePress}
@@ -34,6 +37,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    // display: "flex"
   },
 });
 
