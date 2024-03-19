@@ -3,6 +3,10 @@ import { StyleSheet, Text, View } from "react-native";
 import EmergencyButton from "./components/EmergencyButton";
 import NavigationBar from "./components/NavigationBar";
 import Tip from "./components/Tip";
+import React from "react";
+import { SafeAreaView, StyleSheet } from "react-native";
+import PasswordManager from "./components/PasswordManager";
+import Speak from "./components/Speak";
 
 const App = () => {
   const handleHomePress = () => {
@@ -20,6 +24,7 @@ const App = () => {
 
   return (
     <View style={styles.container}>
+      <Speak text={"hello this page is reading aloud with a very long text so that I can test the pausing"}/>
       <Tip style={{float: "right"}}/>
       <EmergencyButton />
       <NavigationBar>
@@ -29,6 +34,9 @@ const App = () => {
       </NavigationBar>
       <StatusBar style="auto" />
     </View>
+    // <SafeAreaView style={styles.container}>
+    //   <PasswordManager />
+    // </SafeAreaView>
   );
 };
 
