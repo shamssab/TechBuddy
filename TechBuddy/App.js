@@ -1,52 +1,82 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import EmergencyButton from "./components/EmergencyButton";
-import NavigationBar from "./components/NavigationBar";
-import Tip from "./components/Tip";
-import React from "react";
-import { SafeAreaView, StyleSheet } from "react-native";
-import PasswordManager from "./components/PasswordManager";
-import Speak from "./components/Speak";
+import React, { useEffect, useRef, useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import * as SecureStore from "expo-secure-store";
+import PreferredLanguage from "./components/PreferredLanguage";
+import HomeScreen from "./components/HomeScreen";
+import TextAdjustment from "./components/TextAdjustment";
+import Settings from "./components/Settings";
+import TipsScreen from "./components/TipsHomeScreen";
+import LanguageChange from "./components/LanguageChange";
+
+const Stack = createNativeStackNavigator();
 
 const App = () => {
-  const handleHomePress = () => {
-    console.log("Home Button Pressed");
-  };
+  const [initialRouteKey, setInitialRouteKey] = useState(Date.now().toString());
+  const initialRouteRef = useRef("PreferredLanguage");
 
-  const handleButton2Press = () => {
-    console.log("Button 2 pressed");
-  };
+  useEffect(() => {
+    const checkSavedValues = async () => {
+      try {
+        const savedLanguage = await SecureStore.getItemAsync(
+          "selectedLanguage"
+        );
+        const savedFontSize = await SecureStore.getItemAsync("fontSize");
+        const savedFontFamily = JSON.parse(
+          await SecureStore.getItemAsync("fontFamily")
+        );
+        const savedIsBold = await SecureStore.getItemAsync("isBold");
 
-  const handleButton3Press = () => {
-    console.log("Button 3 pressed");
-  };
+        console.log("Saved Values:", {
+          selectedLanguage: savedLanguage,
+          fontSize: savedFontSize,
+          fontFamily: savedFontFamily,
+          isBold: savedIsBold,
+        });
 
+        if (
+          savedLanguage !== "" &&
+          savedFontSize !== "" &&
+          savedFontFamily !== "" &&
+          savedIsBold !== "" &&
+          savedLanguage !== null &&
+          savedFontSize !== null &&
+          savedFontFamily !== null &&
+          savedIsBold !== null
+        ) {
+          console.log("Setting initial route to HomeScreen");
+          initialRouteRef.current = "HomeScreen";
+          console.log("Initial Route changed:", initialRouteRef.current);
+          setInitialRouteKey(Date.now().toString());
+        }
+      } catch (error) {
+        console.error("Error checking saved values:", error);
+      }
+    };
+
+    checkSavedValues();
+
+    console.log(
+      "Initial Route changed (part 2 check):",
+      initialRouteRef.current
+    );
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <Speak text={"hello this page is reading aloud with a very long text so that I can test the pausing"}/>
-      <Tip style={{float: "right"}}/>
-      <EmergencyButton />
-      <NavigationBar>
-        onHomePress={handleHomePress}
-        onButton2Press={handleButton2Press}
-        onButton3Press={handleButton3Press}
-      </NavigationBar>
-      <StatusBar style="auto" />
-    </View>
-    // <SafeAreaView style={styles.container}>
-    //   <PasswordManager />
-    // </SafeAreaView>
+    <NavigationContainer key={initialRouteKey}>
+      <Stack.Navigator initialRouteName={initialRouteRef.current}>
+        <Stack.Screen name="PreferredLanguage" component={PreferredLanguage} />
+        <Stack.Screen name="UpdateFont" component={TextAdjustment} />
+        <Stack.Screen name="Settings" component={Settings} />
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="TipsMenu" component={TipsScreen} />
+        <Stack.Screen
+          name="SettingsLanguagechange"
+          component={LanguageChange}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    // display: "flex"
-  },
-});
 
 export default App;
